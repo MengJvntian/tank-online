@@ -36,6 +36,9 @@
         <input id="nick" maxlength="10" placeholder="例如：小坦克" oninput="saveProfileInputs()" />
         <label>出战皮肤</label>
         <select id="skin" onchange="saveProfileInputs()"></select>
+        <label>职业</label>
+        <select id="classId" onchange="saveProfileInputs()"></select>
+        <p id="classDesc" class="small"></p>
         <p class="muted">账户数据保存在当前浏览器 localStorage：金币、皮肤、升级、最高分、单机解锁进度都会保留。换浏览器或清缓存会丢失。</p>
       </div>
     </div>
@@ -69,7 +72,7 @@
       <p class="muted">
         单机：自己刷关、刷金币、解锁商店。联机：最多 4 人合作，房主创建房间，所有人准备后房主才能开始。手机端可用屏幕虚拟按键，电脑端用键盘。<br>
         操作：WASD / 方向键移动，空格射击。道具：❤️回血、⚡加速、🔥双发、🛡护盾、💣清屏、❄️冰冻、🔧修复、🧱钢化、🔴激光、👻穿墙、🧲磁铁、🚁无人机。<br>
-        商店：皮肤、生命、火力、速度、磁力、金币收益、复活强化都会影响单机，也会随联机资料发送到服务器。
+        职业：突击手、守护者、维修兵、侦察兵、爆破手都有专属技能。电脑按 E，手机按“技能”。商店：皮肤、生命、火力、速度、磁力、金币收益、复活强化都会影响单机，也会随联机资料发送到服务器。
       </p>
       <button class="gray" onclick="show('home')">返回</button>
     </div>
@@ -141,7 +144,7 @@
             <button data-key="right" class="ctl right">▶</button>
           </div>
           <div class="action-pad">
-            <button id="fullBtn" class="ctl smallctl">全屏</button>
+            <button data-key="skill" class="ctl skill">技能</button>
             <button data-key="shoot" class="ctl fire">开火</button>
           </div>
         </div>
@@ -155,6 +158,7 @@
         <div class="stat"><span>剩余敌人</span><b id="gEnemy">0</b></div>
         <div class="stat"><span>我的生命</span><b id="gLife">3</b></div>
         <div class="stat"><span>我的道具</span><b id="gBuff">无</b></div>
+        <div class="stat"><span>职业技能</span><b id="gSkill">E / 技能键</b></div>
         <div class="row"><button class="red" onclick="location.reload()">退出</button></div>
         <h3>队友/玩家</h3>
         <div id="team" class="players"></div>
@@ -166,8 +170,10 @@
 <script src="/js/render.js"></script>
 <script>
 const sk=document.getElementById('skin');
+const cls=document.getElementById('classId');
 const lv=document.getElementById('levelSelect');
 Object.entries(TANK_SHARED.SKINS).forEach(([id,s])=>sk.insertAdjacentHTML('beforeend',`<option value="${id}">${s.name}</option>`));
+Object.entries(TANK_SHARED.CLASSES).forEach(([id,c])=>cls.insertAdjacentHTML('beforeend',`<option value="${id}">${c.icon} ${c.name}</option>`));
 TANK_SHARED.LEVELS.forEach((l,i)=>lv.insertAdjacentHTML('beforeend',`<option value="${i+1}">${i+1} ${l.name}</option>`));
 </script>
 <script src="/js/app.js"></script>

@@ -8,6 +8,14 @@ window.TANK_SHARED = (() => {
     lava:{name:'熔岩',color:'#f97316',price:1200}, cyber:{name:'赛博',color:'#14b8a6',price:1500}
   };
   const UPGRADES={life:{name:'生命强化',icon:'❤️',base:150,desc:'开局生命 +1'}, fire:{name:'火力强化',icon:'🔥',base:180,desc:'射击冷却降低'}, speed:{name:'速度强化',icon:'⚡',base:160,desc:'移动速度提升'}, magnet:{name:'磁力强化',icon:'🧲',base:140,desc:'扩大拾取范围'}, income:{name:'金币强化',icon:'🪙',base:220,desc:'击败敌人金币增加'}, revive:{name:'复活强化',icon:'✨',base:260,desc:'单局额外复活次数'}};
+
+  const CLASSES={
+    assault:{name:'突击手',icon:'🔥',desc:'技能：火力全开，短时间双发+极速射击'},
+    guardian:{name:'守护者',icon:'🛡',desc:'技能：堡垒护盾，获得护盾并钢化基地'},
+    medic:{name:'维修兵',icon:'💖',desc:'技能：紧急维修，回复生命并修复基地'},
+    scout:{name:'侦察兵',icon:'👻',desc:'技能：幽灵突袭，加速、穿墙并吸附道具'},
+    bomber:{name:'爆破手',icon:'☢️',desc:'技能：战术核弹，清理场上敌人'}
+  };
   const POWER_ICON={life:'❤️',speed:'⚡',double:'🔥',shield:'🛡',bomb:'💣',freeze:'❄️',repair:'🔧',laser:'🔴',coin:'🪙',wall:'🧱',ghost:'👻',magnet:'🧲',drone:'🚁',heartRain:'💖',rapid:'⚡🔥',nuke:'☢️',star:'⭐',slow:'🐌',barrier:'🧱✨'};
   const POWER_NAME={life:'回血',speed:'加速',double:'双发',shield:'护盾',bomb:'清屏',freeze:'冰冻',repair:'修复基地',laser:'激光',coin:'金币礼包',wall:'基地钢化',ghost:'穿墙',magnet:'磁铁',drone:'无人机',heartRain:'全队回血',rapid:'极速射击',nuke:'核弹',star:'超级星星',slow:'敌人减速',barrier:'临时屏障'};
   const LEVELS=[
@@ -25,5 +33,5 @@ window.TANK_SHARED = (() => {
 {name:"终极堡垒",enemyTotal:56,reward:1500,boss:true,desc:"最终 Boss：末日堡垒，混合所有敌人与复杂地形",map:[".....................","SSS.BBB.WWW.BBB.SSS..","....B...W.W...B......",".BB.B.S.W.W.S.B.BB...",".B....S.W.W.S....B...",".B.SSSS.W.W.SSSS.B...","...S....W.W....S.....","GGGG..BBBBBBB..GGGG..","G.....B.....B.....G..","G.SSS.B.WWW.B.SSS.G..","G.....B.WWW.B.....G..","G.SSS.B.WWW.B.SSS.G..","G.....B.....B.....G..","GGGG..BBBBBBB..GGGG..","...S....W.W....S.....",".B.SSSS.W.W.SSSS.B...",".B....S.....S....B...",".BB.B...BBB...B.BB...",".........BEB.........","........BBBBB........","....................."]}
 ];
   function parseMap(level){return LEVELS[level-1].map.map(row=>row.split('').map(ch=>ch==='B'?BRICK:ch==='S'?STEEL:ch==='W'?WATER:ch==='G'?GRASS:ch==='E'?BASE:EMPTY));}
-  return {TILE,W,H,ROWS,COLS,EMPTY,BRICK,STEEL,WATER,GRASS,BASE,SKINS,UPGRADES,POWER_ICON,POWER_NAME,LEVELS,parseMap};
+  return {TILE,W,H,ROWS,COLS,EMPTY,BRICK,STEEL,WATER,GRASS,BASE,SKINS,UPGRADES,POWER_ICON,POWER_NAME,CLASSES,LEVELS,parseMap};
 })();
