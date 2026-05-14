@@ -163,6 +163,18 @@
         <h3>队友/玩家</h3>
         <div id="team" class="players"></div>
       </div>
+
+      <div id="endPanel" class="end-panel">
+        <div class="end-card">
+          <h2 id="endTitle">关卡结束</h2>
+          <p id="endMsg" class="muted"></p>
+          <div class="row" style="justify-content:center">
+            <button class="green" onclick="restartCurrent()">重玩本关</button>
+            <button id="nextBtn" class="gold" onclick="nextLevel()">下一关</button>
+            <button class="gray" onclick="exitAfterLevel()">退出</button>
+          </div>
+        </div>
+      </div>
     </div>
   </section>
 </div>
@@ -172,8 +184,6 @@
 const sk=document.getElementById('skin');
 const cls=document.getElementById('classId');
 const lv=document.getElementById('levelSelect');
-Object.entries(TANK_SHARED.SKINS).forEach(([id,s])=>sk.insertAdjacentHTML('beforeend',`<option value="${id}">${s.name}</option>`));
-Object.entries(TANK_SHARED.CLASSES).forEach(([id,c])=>cls.insertAdjacentHTML('beforeend',`<option value="${id}">${c.icon} ${c.name}</option>`));
 TANK_SHARED.LEVELS.forEach((l,i)=>lv.insertAdjacentHTML('beforeend',`<option value="${i+1}">${i+1} ${l.name}</option>`));
 </script>
 <script src="/js/app.js"></script>

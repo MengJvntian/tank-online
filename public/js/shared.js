@@ -1,6 +1,6 @@
 window.TANK_SHARED = (() => {
   const TILE=32, W=672, H=672, ROWS=21, COLS=21;
-  const EMPTY=0, BRICK=1, STEEL=2, WATER=3, GRASS=4, BASE=5;
+  const EMPTY=0, BRICK=1, STEEL=2, WATER=3, GRASS=4, BASE=5, REINFORCED=6;
   const SKINS={
     green:{name:'绿甲',color:'#22c55e',price:0}, blue:{name:'蓝焰',color:'#38bdf8',price:180},
     gold:{name:'黄金',color:'#facc15',price:360}, pink:{name:'粉红',color:'#fb7185',price:520},
@@ -10,14 +10,15 @@ window.TANK_SHARED = (() => {
   const UPGRADES={life:{name:'生命强化',icon:'❤️',base:150,desc:'开局生命 +1'}, fire:{name:'火力强化',icon:'🔥',base:180,desc:'射击冷却降低'}, speed:{name:'速度强化',icon:'⚡',base:160,desc:'移动速度提升'}, magnet:{name:'磁力强化',icon:'🧲',base:140,desc:'扩大拾取范围'}, income:{name:'金币强化',icon:'🪙',base:220,desc:'击败敌人金币增加'}, revive:{name:'复活强化',icon:'✨',base:260,desc:'单局额外复活次数'}};
 
   const CLASSES={
-    assault:{name:'突击手',icon:'🔥',desc:'技能：火力全开，短时间双发+极速射击'},
-    guardian:{name:'守护者',icon:'🛡',desc:'技能：堡垒护盾，获得护盾并钢化基地'},
-    medic:{name:'维修兵',icon:'💖',desc:'技能：紧急维修，回复生命并修复基地'},
-    scout:{name:'侦察兵',icon:'👻',desc:'技能：幽灵突袭，加速、穿墙并吸附道具'},
-    bomber:{name:'爆破手',icon:'☢️',desc:'技能：战术核弹，清理场上敌人'}
+    none:{name:'无技能',icon:'▫️',price:0,desc:'默认状态：没有主动技能，可在商店购买职业技能'},
+    assault:{name:'突击手',icon:'🔥',price:1800,desc:'技能：短时间双发+极速射击，适合快速清怪'},
+    guardian:{name:'守护者',icon:'🛡',price:2200,desc:'技能：获得护盾并把基地周围砖块加固为二段砖'},
+    medic:{name:'维修兵',icon:'💖',price:2500,desc:'技能：全队小幅回血并修复基地周围普通砖'},
+    scout:{name:'侦察兵',icon:'👻',price:2800,desc:'技能：短时间加速、穿墙并吸附道具'},
+    bomber:{name:'爆破手',icon:'☢️',price:4200,desc:'技能：战术核弹，清小兵并重创 Boss'}
   };
-  const POWER_ICON={life:'❤️',speed:'⚡',double:'🔥',shield:'🛡',bomb:'💣',freeze:'❄️',repair:'🔧',laser:'🔴',coin:'🪙',wall:'🧱',ghost:'👻',magnet:'🧲',drone:'🚁',heartRain:'💖',rapid:'⚡🔥',nuke:'☢️',star:'⭐',slow:'🐌',barrier:'🧱✨'};
-  const POWER_NAME={life:'回血',speed:'加速',double:'双发',shield:'护盾',bomb:'清屏',freeze:'冰冻',repair:'修复基地',laser:'激光',coin:'金币礼包',wall:'基地钢化',ghost:'穿墙',magnet:'磁铁',drone:'无人机',heartRain:'全队回血',rapid:'极速射击',nuke:'核弹',star:'超级星星',slow:'敌人减速',barrier:'临时屏障'};
+  const POWER_ICON={life:'❤️',speed:'⚡',double:'🔥',shield:'🛡',bomb:'💣',freeze:'❄️',repair:'🔧',laser:'🔴',coin:'🪙',wall:'🧱',ghost:'👻',magnet:'🧲',drone:'🚁',heartRain:'💖',rapid:'⚡🔥',nuke:'☢️',star:'⭐',barrier:'🧱✨'};
+  const POWER_NAME={life:'回血',speed:'加速',double:'双发',shield:'护盾',bomb:'清屏',freeze:'冰冻',repair:'修复基地',laser:'激光',coin:'金币礼包',wall:'基地钢化',ghost:'穿墙',magnet:'磁铁',drone:'无人机',heartRain:'全队回血',rapid:'极速射击',nuke:'核弹',star:'超级星星',barrier:'临时屏障'};
   const LEVELS=[
 {name:"训练营",enemyTotal:16,reward:120,desc:"适合上手，敌人较少",map:[".....................","..B..B..B...B..B..B..","..B..B..B...B..B..B..",".....................","....SS.......SS......",".....................","..BB....BBB....BB....","..BB.....G.....BB....","..........W..........","..........W..........","....BB.........BB....","....BB.........BB....","..........G..........","..SS.............SS..",".....................","..B..B..B...B..B..B..","..B..B..B...B..B..B..",".........BBB.........",".........BEB.........","........BBBBB........","....................."]},
 {name:"河道防线",enemyTotal:22,reward:180,desc:"水域增多，注意走位",map:[".....................",".BBB....SSSSS....BBB.",".B.................B.",".B..GG.........GG..B.","....GG.........GG....",".........WWW.........","BBBB.....WWW.....BBBB",".........WWW.........","....SS.........SS....",".....................","..BBBBB.....BBBBB....",".....................","....SS...GGG...SS....",".........GGG.........","BBBB.............BBBB","....WWW.......WWW....","....WWW.......WWW....",".........BBB.........",".........BEB.........","........BBBBB........","....................."]},
@@ -33,5 +34,5 @@ window.TANK_SHARED = (() => {
 {name:"终极堡垒",enemyTotal:56,reward:1500,boss:true,desc:"最终 Boss：末日堡垒，混合所有敌人与复杂地形",map:[".....................","SSS.BBB.WWW.BBB.SSS..","....B...W.W...B......",".BB.B.S.W.W.S.B.BB...",".B....S.W.W.S....B...",".B.SSSS.W.W.SSSS.B...","...S....W.W....S.....","GGGG..BBBBBBB..GGGG..","G.....B.....B.....G..","G.SSS.B.WWW.B.SSS.G..","G.....B.WWW.B.....G..","G.SSS.B.WWW.B.SSS.G..","G.....B.....B.....G..","GGGG..BBBBBBB..GGGG..","...S....W.W....S.....",".B.SSSS.W.W.SSSS.B...",".B....S.....S....B...",".BB.B...BBB...B.BB...",".........BEB.........","........BBBBB........","....................."]}
 ];
   function parseMap(level){return LEVELS[level-1].map.map(row=>row.split('').map(ch=>ch==='B'?BRICK:ch==='S'?STEEL:ch==='W'?WATER:ch==='G'?GRASS:ch==='E'?BASE:EMPTY));}
-  return {TILE,W,H,ROWS,COLS,EMPTY,BRICK,STEEL,WATER,GRASS,BASE,SKINS,UPGRADES,POWER_ICON,POWER_NAME,CLASSES,LEVELS,parseMap};
+  return {TILE,W,H,ROWS,COLS,EMPTY,BRICK,STEEL,WATER,GRASS,BASE,REINFORCED,SKINS,UPGRADES,POWER_ICON,POWER_NAME,CLASSES,LEVELS,parseMap};
 })();
