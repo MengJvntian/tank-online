@@ -76,20 +76,30 @@
   </section>
 
   <section id="lobby" class="screen">
-    <div class="hero">
+    <div class="grid2">
       <div class="panel">
         <h2>创建房间</h2>
+        <label>房间名</label>
+        <input id="roomName" maxlength="14" placeholder="例如：今晚刷金币" />
         <label>选择关卡</label>
         <select id="levelSelect"></select>
+        <label>房间类型</label>
+        <select id="roomPrivacy">
+          <option value="public">公开房间：显示在大厅列表</option>
+          <option value="private">私密房间：只通过房间号加入</option>
+        </select>
         <button class="green" onclick="createRoom()">创建房间</button>
-        <p class="muted">创建后把房间号发给朋友。只有房主能开始游戏。</p>
+        <p class="muted">公开房间会显示在右侧大厅；私密房间不会显示，只能用房间号加入。只有房主能开始游戏。</p>
       </div>
       <div class="panel">
-        <h2>加入房间</h2>
+        <div class="row" style="justify-content:space-between"><h2>公开房间</h2><button class="gray" onclick="refreshRooms()">刷新</button></div>
+        <div id="publicRooms" class="players"></div>
+        <hr style="border-color:rgba(148,163,184,.2);margin:16px 0">
+        <h2>通过房间号加入</h2>
         <label>房间号</label>
         <input id="joinCode" maxlength="4" placeholder="例如 ABCD" />
         <button class="gold" onclick="joinRoom()">加入房间</button>
-        <p class="muted">朋友只要打开同一个网址，输入房间号即可。</p>
+        <p class="muted">私密房间不会出现在列表里，朋友需要输入房间号。</p>
         <button class="gray" onclick="show('home')">返回主页</button>
       </div>
     </div>
