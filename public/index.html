@@ -2,7 +2,7 @@
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
 <title>坦克小英雄 Plus</title>
 <link rel="stylesheet" href="/css/style.css" />
 </head>
@@ -20,7 +20,7 @@
   <section id="home" class="screen active">
     <div class="hero">
       <div>
-        <h1>单机能刷<br>联机能组队</h1>
+        <h1>手机电脑<br>都能开战</h1>
         <p>新增单机闯关、个人商店、本地账户存档、联机准备机制、房主开局限制、更多成长升级。朋友点链接就能玩，你自己也可以单机刷金币。</p>
         <div class="row">
           <button class="green" onclick="show('levels')">单机闯关</button>
@@ -67,7 +67,7 @@
     <div class="panel">
       <h2>玩法说明</h2>
       <p class="muted">
-        单机：自己刷关、刷金币、解锁商店。联机：最多 4 人合作，房主创建房间，所有人准备后房主才能开始。<br>
+        单机：自己刷关、刷金币、解锁商店。联机：最多 4 人合作，房主创建房间，所有人准备后房主才能开始。手机端可用屏幕虚拟按键，电脑端用键盘。<br>
         操作：WASD / 方向键移动，空格射击。道具：❤️回血、⚡加速、🔥双发、🛡护盾、💣清屏、❄️冰冻、🔧修复、🧱钢化、🔴激光、👻穿墙、🧲磁铁、🚁无人机。<br>
         商店：皮肤、生命、火力、速度、磁力、金币收益、复活强化都会影响单机，也会随联机资料发送到服务器。
       </p>
@@ -132,7 +132,20 @@
 
   <section id="game" class="screen">
     <div class="game">
-      <canvas id="c" width="672" height="672"></canvas>
+      <div class="canvas-wrap"><canvas id="c" width="672" height="672"></canvas></div>
+        <div id="mobileControls" class="mobile-controls">
+          <div class="dpad">
+            <button data-key="up" class="ctl up">▲</button>
+            <button data-key="left" class="ctl left">◀</button>
+            <button data-key="down" class="ctl down">▼</button>
+            <button data-key="right" class="ctl right">▶</button>
+          </div>
+          <div class="action-pad">
+            <button id="fullBtn" class="ctl smallctl">全屏</button>
+            <button data-key="shoot" class="ctl fire">开火</button>
+          </div>
+        </div>
+
       <div class="panel side">
         <h2>战斗面板</h2>
         <div class="stat"><span>模式/房间</span><b id="gCode">----</b></div>
