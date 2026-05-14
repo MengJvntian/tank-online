@@ -2,45 +2,64 @@
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>坦克小英雄 Online</title>
-<style>
-*{box-sizing:border-box}body{margin:0;min-height:100vh;background:radial-gradient(circle at top,#334155,#020617 70%);font-family:Arial,"Microsoft YaHei",sans-serif;color:#fff;display:flex;justify-content:center;align-items:center}
-.app{width:1060px;min-height:780px;background:rgba(15,23,42,.92);border:1px solid rgba(148,163,184,.25);border-radius:24px;box-shadow:0 25px 80px rgba(0,0,0,.55);padding:22px}
-.top{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}.title{font-size:34px;font-weight:900;color:#fde68a;text-shadow:0 4px 0 #7c2d12;letter-spacing:2px}.badge{padding:8px 12px;border-radius:999px;background:rgba(30,41,59,.9);border:1px solid rgba(148,163,184,.25);color:#e5e7eb}
-.screen{display:none}.screen.active{display:block}.hero{height:650px;border-radius:22px;background:linear-gradient(rgba(2,6,23,.2),rgba(2,6,23,.85)),repeating-linear-gradient(45deg,rgba(255,255,255,.04) 0 8px,transparent 8px 16px),radial-gradient(circle at 70% 20%,rgba(250,204,21,.18),transparent 30%),#0f172a;display:grid;grid-template-columns:1fr 1fr;gap:24px;padding:36px;align-items:center}.hero h1{font-size:56px;margin:0 0 14px;line-height:1.05}.hero p{color:#cbd5e1;font-size:18px;line-height:1.8}.panel{border-radius:18px;background:rgba(30,41,59,.88);border:1px solid rgba(148,163,184,.22);padding:18px}
-input,select{width:100%;padding:12px 14px;border-radius:12px;border:1px solid rgba(148,163,184,.35);background:#0f172a;color:#fff;font-size:16px;margin:8px 0 14px}
-button{border:0;border-radius:14px;padding:12px 18px;font-size:15px;font-weight:800;color:#fff;background:#2563eb;box-shadow:0 7px 0 #1e3a8a;cursor:pointer;margin:4px}button:hover{filter:brightness(1.12)}button:active{transform:translateY(4px);box-shadow:0 3px 0 #1e3a8a}.green{background:#16a34a;box-shadow:0 7px 0 #14532d}.gold{background:#d97706;box-shadow:0 7px 0 #78350f}.gray{background:#475569;box-shadow:0 7px 0 #1e293b}.red{background:#dc2626;box-shadow:0 7px 0 #7f1d1d}.row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}.muted{color:#cbd5e1;line-height:1.7}.game{display:grid;grid-template-columns:672px 1fr;gap:18px}canvas{background:#020617;border:5px solid #64748b;border-radius:16px;box-shadow:0 18px 55px rgba(0,0,0,.55)}.side{min-height:672px}.stat{display:flex;justify-content:space-between;border-bottom:1px solid rgba(148,163,184,.16);padding:10px 0;color:#e5e7eb}.players{display:grid;grid-template-columns:1fr;gap:8px;margin-top:10px}.player{padding:10px;border-radius:12px;background:rgba(15,23,42,.75);border:1px solid rgba(148,163,184,.18)}.chat{height:120px;overflow:auto;background:#020617;border-radius:12px;padding:10px;margin-top:10px;color:#cbd5e1;font-size:13px}.level-list{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-top:8px}.level{padding:12px;border-radius:14px;background:rgba(15,23,42,.7);border:1px solid rgba(148,163,184,.18);cursor:pointer}.level.active{outline:2px solid #facc15}.skin-dot{display:inline-block;width:16px;height:16px;border-radius:50%;vertical-align:middle;margin-right:6px}
-</style>
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>坦克小英雄 Plus</title>
+<link rel="stylesheet" href="/css/style.css" />
 </head>
 <body>
 <div class="app">
   <div class="top">
-    <div class="title">坦克小英雄 Online</div>
-    <div class="badge">轻量联机版 · 最多 4 人合作</div>
+    <div class="title">坦克小英雄 Plus</div>
+    <div class="row">
+      <div class="badge">🪙 <span id="coinText">0</span></div>
+      <div class="badge">🏆 <span id="bestText">0</span></div>
+      <div class="badge">🎨 <span id="skinText">绿甲</span></div>
+    </div>
   </div>
 
   <section id="home" class="screen active">
     <div class="hero">
       <div>
-        <h1>朋友点链接<br/>就能联机</h1>
-        <p>创建房间，发房间号给朋友。大家一起守基地、打敌人、抢道具、挑战 Boss。</p>
+        <h1>单机能刷<br>联机能组队</h1>
+        <p>新增单机闯关、个人商店、本地账户存档、联机准备机制、房主开局限制、更多成长升级。朋友点链接就能玩，你自己也可以单机刷金币。</p>
         <div class="row">
-          <button class="green" onclick="show('lobby')">进入联机大厅</button>
+          <button class="green" onclick="show('levels')">单机闯关</button>
+          <button class="gold" onclick="show('lobby')">联机大厅</button>
+          <button onclick="show('shop')">个人商店</button>
+          <button class="gray" onclick="show('profile')">个人资料</button>
           <button class="gray" onclick="show('help')">玩法说明</button>
         </div>
       </div>
       <div class="panel">
-        <h2>进入前设置</h2>
+        <h2>个人账户</h2>
         <label>昵称</label>
-        <input id="nick" maxlength="10" placeholder="例如：小坦克" />
-        <label>皮肤</label>
-        <select id="skin">
-          <option value="green">绿甲</option><option value="blue">蓝焰</option><option value="gold">黄金</option>
-          <option value="pink">粉红</option><option value="purple">紫晶</option><option value="black">黑钢</option>
-        </select>
-        <p class="muted">提示：部署到 Render 后，朋友不用安装任何东西，打开网址输入房间号即可。</p>
+        <input id="nick" maxlength="10" placeholder="例如：小坦克" oninput="saveProfileInputs()" />
+        <label>出战皮肤</label>
+        <select id="skin" onchange="saveProfileInputs()"></select>
+        <p class="muted">账户数据保存在当前浏览器 localStorage：金币、皮肤、升级、最高分、单机解锁进度都会保留。换浏览器或清缓存会丢失。</p>
       </div>
+    </div>
+  </section>
+
+  <section id="levels" class="screen">
+    <div class="panel">
+      <div class="row" style="justify-content:space-between"><h2>单机选关</h2><button class="gray" onclick="show('home')">返回主页</button></div>
+      <div id="levelGrid" class="grid3"></div>
+    </div>
+  </section>
+
+  <section id="shop" class="screen">
+    <div class="panel">
+      <div class="row" style="justify-content:space-between"><h2>个人商店</h2><button class="gray" onclick="show('home')">返回主页</button></div>
+      <div id="shopGrid"></div>
+    </div>
+  </section>
+
+  <section id="profile" class="screen">
+    <div class="panel">
+      <div class="row" style="justify-content:space-between"><h2>个人资料</h2><button class="gray" onclick="show('home')">返回主页</button></div>
+      <div id="profileBox"></div>
+      <button class="red" onclick="if(confirm('确定清空本地存档吗？')){localStorage.removeItem('tank_hero_v2_profile');location.reload()}">清空本地存档</button>
     </div>
   </section>
 
@@ -48,9 +67,9 @@ button{border:0;border-radius:14px;padding:12px 18px;font-size:15px;font-weight:
     <div class="panel">
       <h2>玩法说明</h2>
       <p class="muted">
-        操作：WASD / 方向键移动，空格射击。创建房间后可选择关卡，朋友输入房间号加入。<br>
-        道具：❤️回血、⚡加速、🔥双发、🛡护盾、💣清屏、❄️冰冻、🔧修复基地、🧱基地钢化、🔴激光、👻穿墙、🧲磁铁、🪙金币。<br>
-        敌人：普通、快速、重型、狙击、Boss。基地被毁或全员阵亡就失败。
+        单机：自己刷关、刷金币、解锁商店。联机：最多 4 人合作，房主创建房间，所有人准备后房主才能开始。<br>
+        操作：WASD / 方向键移动，空格射击。道具：❤️回血、⚡加速、🔥双发、🛡护盾、💣清屏、❄️冰冻、🔧修复、🧱钢化、🔴激光、👻穿墙、🧲磁铁、🚁无人机。<br>
+        商店：皮肤、生命、火力、速度、磁力、金币收益、复活强化都会影响单机，也会随联机资料发送到服务器。
       </p>
       <button class="gray" onclick="show('home')">返回</button>
     </div>
@@ -61,12 +80,9 @@ button{border:0;border-radius:14px;padding:12px 18px;font-size:15px;font-weight:
       <div class="panel">
         <h2>创建房间</h2>
         <label>选择关卡</label>
-        <select id="levelSelect">
-          <option value="1">1 训练营</option><option value="2">2 河道防线</option><option value="3">3 钢铁迷宫</option>
-          <option value="4">4 草丛伏击</option><option value="5">5 十字火线</option><option value="6">6 终极堡垒</option>
-        </select>
+        <select id="levelSelect"></select>
         <button class="green" onclick="createRoom()">创建房间</button>
-        <p class="muted">创建后把房间号发给朋友。</p>
+        <p class="muted">创建后把房间号发给朋友。只有房主能开始游戏。</p>
       </div>
       <div class="panel">
         <h2>加入房间</h2>
@@ -74,34 +90,32 @@ button{border:0;border-radius:14px;padding:12px 18px;font-size:15px;font-weight:
         <input id="joinCode" maxlength="4" placeholder="例如 ABCD" />
         <button class="gold" onclick="joinRoom()">加入房间</button>
         <p class="muted">朋友只要打开同一个网址，输入房间号即可。</p>
+        <button class="gray" onclick="show('home')">返回主页</button>
       </div>
     </div>
   </section>
 
   <section id="room" class="screen">
-    <div class="game">
+    <div class="grid2">
       <div class="panel">
         <h2>房间 <span id="roomCode">----</span></h2>
-        <p class="muted">把这个房间号发给朋友。你也可以直接复制当前网页链接，再告诉他房间号。</p>
+        <p id="hostTip" class="muted"></p>
         <div class="row">
-          <button class="green" onclick="send({type:'ready',ready:true})">我准备好了</button>
-          <button class="gold" onclick="startGame()">开始游戏</button>
-          <button class="gray" onclick="copyInvite()">复制邀请文字</button>
+          <button class="green" onclick="setReady()">我准备好了</button>
+          <button class="gray" onclick="cancelReady()">取消准备</button>
+          <button id="startBtn" class="gold" onclick="startGame()">开始游戏</button>
+          <button class="gray" onclick="copyInvite()">复制邀请</button>
           <button class="red" onclick="location.reload()">退出</button>
         </div>
         <h3>玩家列表</h3>
         <div id="players" class="players"></div>
-        <h3>关卡</h3>
-        <div id="levels" class="level-list"></div>
         <div class="chat" id="chat"></div>
-        <div class="row">
-          <input id="chatInput" placeholder="说点什么..." onkeydown="if(event.key==='Enter')chatSend()" />
-          <button onclick="chatSend()">发送</button>
-        </div>
+        <div class="row"><input id="chatInput" placeholder="说点什么..." onkeydown="if(event.key==='Enter')chatSend()" /><button onclick="chatSend()">发送</button></div>
       </div>
       <div class="panel">
-        <h2>小贴士</h2>
-        <p class="muted">房主和普通玩家都可以点“开始游戏”，这是朋友娱乐版，没做严格权限。刷新网页会离开房间。</p>
+        <h2>联机关卡</h2>
+        <p class="muted">房主选择关卡，所有玩家准备后，房主按钮才会启用。</p>
+        <div id="onlineLevels" class="level-list"></div>
       </div>
     </div>
   </section>
@@ -111,126 +125,28 @@ button{border:0;border-radius:14px;padding:12px 18px;font-size:15px;font-weight:
       <canvas id="c" width="672" height="672"></canvas>
       <div class="panel side">
         <h2>战斗面板</h2>
-        <div class="stat"><span>房间</span><b id="gCode">----</b></div>
+        <div class="stat"><span>模式/房间</span><b id="gCode">----</b></div>
         <div class="stat"><span>关卡</span><b id="gLevel">1</b></div>
         <div class="stat"><span>分数</span><b id="gScore">0</b></div>
         <div class="stat"><span>金币</span><b id="gCoins">0</b></div>
         <div class="stat"><span>剩余敌人</span><b id="gEnemy">0</b></div>
         <div class="stat"><span>我的生命</span><b id="gLife">3</b></div>
         <div class="stat"><span>我的道具</span><b id="gBuff">无</b></div>
-        <div class="row">
-          <button class="red" onclick="location.reload()">退出</button>
-        </div>
-        <h3>队友</h3>
+        <div class="row"><button class="red" onclick="location.reload()">退出</button></div>
+        <h3>队友/玩家</h3>
         <div id="team" class="players"></div>
-        <p class="muted">WASD / 方向键移动，空格射击。移动和战斗由服务器同步，所以朋友看到的是同一场战斗。</p>
       </div>
     </div>
   </section>
 </div>
-
+<script src="/js/shared.js"></script>
+<script src="/js/render.js"></script>
 <script>
-const $=id=>document.getElementById(id);
-const canvas=$("c"), ctx=canvas.getContext("2d");
-let ws,selfId=null,room=null,state=null,selectedLevel=1,latest=null;
-const TILE=32, EMPTY=0, BRICK=1, STEEL=2, WATER=3, GRASS=4, BASE=5;
-const POWER_ICON={life:"❤️",speed:"⚡",double:"🔥",shield:"🛡",bomb:"💣",freeze:"❄️",repair:"🔧",laser:"🔴",coin:"🪙",wall:"🧱",ghost:"👻",magnet:"🧲"};
-const POWER_NAME={life:"回血",speed:"加速",double:"双发",shield:"护盾",bomb:"清屏",freeze:"冰冻",repair:"修复",laser:"激光",coin:"金币",wall:"钢化",ghost:"穿墙",magnet:"磁铁"};
-const keys={up:false,down:false,left:false,right:false,shoot:false};
-function show(id){document.querySelectorAll(".screen").forEach(s=>s.classList.remove("active"));$(id).classList.add("active")}
-function connect(){
-  return new Promise((resolve,reject)=>{
-    if(ws&&ws.readyState===1)return resolve();
-    const proto=location.protocol==="https:"?"wss":"ws";
-    ws=new WebSocket(`${proto}://${location.host}`);
-    ws.onopen=resolve; ws.onerror=reject; ws.onmessage=e=>onMsg(JSON.parse(e.data));
-  });
-}
-function send(o){ if(ws&&ws.readyState===1) ws.send(JSON.stringify(o)); }
-function nick(){return $("nick").value.trim()||"玩家"}
-function skin(){return $("skin").value}
-async function createRoom(){ await connect(); send({type:"create",nick:nick(),skin:skin(),level:Number($("levelSelect").value)}); }
-async function joinRoom(){ await connect(); send({type:"join",nick:nick(),skin:skin(),code:$("joinCode").value.trim().toUpperCase()}); }
-function startGame(){ send({type:"start",level:selectedLevel}); }
-function onMsg(m){
-  if(m.type==="error") alert(m.message);
-  if(m.type==="joined"){ selfId=m.selfId; room=m.room; selectedLevel=room.level; renderRoom(m.levels); show("room"); }
-  if(m.type==="room"){ room=m.room; renderPlayers(); }
-  if(m.type==="start"){ show("game"); }
-  if(m.type==="state"){ latest=m.state; draw(); updateSide(); }
-  if(m.type==="end"){ addChat("系统",m.message); }
-  if(m.type==="chat") addChat(m.nick,m.text);
-}
-function renderRoom(levels){
-  $("roomCode").textContent=room.code; renderPlayers();
-  const box=$("levels"); box.innerHTML="";
-  levels.forEach(l=>{
-    const d=document.createElement("div"); d.className="level"+(l.i===selectedLevel?" active":"");
-    d.innerHTML=`<b>${l.i}. ${l.name}</b><br><span class="muted">敌人 ${l.enemyTotal} ｜ 奖励 ${l.reward}</span>`;
-    d.onclick=()=>{selectedLevel=l.i; renderRoom(levels)};
-    box.appendChild(d);
-  });
-}
-function renderPlayers(){
-  if(!room)return;
-  $("roomCode").textContent=room.code;
-  $("players").innerHTML=room.players.map(p=>`<div class="player"><b>${p.nick}</b> ${p.id===selfId?"（我）":""}<br>状态：${p.ready?"✅ 已准备":"⌛ 未准备"} ｜ 生命 ${p.life}</div>`).join("");
-}
-function addChat(n,t){ const c=$("chat"); c.innerHTML+=`<div><b>${escapeHtml(n)}：</b>${escapeHtml(t)}</div>`; c.scrollTop=c.scrollHeight; }
-function chatSend(){ const v=$("chatInput").value.trim(); if(v){send({type:"chat",text:v});$("chatInput").value=""} }
-function copyInvite(){ navigator.clipboard?.writeText(`来玩坦克小英雄 Online：${location.href} 房间号：${room?.code||""}`); alert("已复制邀请文字"); }
-function escapeHtml(s){return String(s).replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[m]))}
-window.addEventListener("keydown",e=>{
-  if(["Space","ArrowUp","ArrowDown","ArrowLeft","ArrowRight"].includes(e.code))e.preventDefault();
-  if(e.key==="ArrowUp"||e.key.toLowerCase()==="w")keys.up=true;
-  if(e.key==="ArrowDown"||e.key.toLowerCase()==="s")keys.down=true;
-  if(e.key==="ArrowLeft"||e.key.toLowerCase()==="a")keys.left=true;
-  if(e.key==="ArrowRight"||e.key.toLowerCase()==="d")keys.right=true;
-  if(e.code==="Space")keys.shoot=true;
-  send({type:"input",input:keys});
-});
-window.addEventListener("keyup",e=>{
-  if(e.key==="ArrowUp"||e.key.toLowerCase()==="w")keys.up=false;
-  if(e.key==="ArrowDown"||e.key.toLowerCase()==="s")keys.down=false;
-  if(e.key==="ArrowLeft"||e.key.toLowerCase()==="a")keys.left=false;
-  if(e.key==="ArrowRight"||e.key.toLowerCase()==="d")keys.right=false;
-  if(e.code==="Space")keys.shoot=false;
-  send({type:"input",input:keys});
-});
-function updateSide(){
-  if(!latest)return;
-  $("gCode").textContent=latest.code;$("gLevel").textContent=latest.level;$("gScore").textContent=latest.score;$("gCoins").textContent=latest.coins;$("gEnemy").textContent=latest.enemyRemain+latest.enemies.length;
-  const me=latest.players.find(p=>p.id===selfId); if(me){$("gLife").textContent=me.alive?me.life:"阵亡"; const bs=Object.entries(me.buffs).filter(([k,v])=>v>0).map(([k,v])=>(POWER_ICON[k]||k)+Math.ceil(v/30)); $("gBuff").textContent=bs.join(" ")||"无";}
-  $("team").innerHTML=latest.players.map(p=>`<div class="player"><span class="skin-dot" style="background:${p.color}"></span><b>${p.nick}</b> ${p.id===selfId?"（我）":""}<br>生命：${p.alive?p.life:"阵亡"} ｜ 分数：${p.score} ｜ 金币：${p.coins}</div>`).join("");
-}
-function drawTile(c,r,t){
-  const x=c*TILE,y=r*TILE;
-  if(t===BRICK){ctx.fillStyle="#92400e";ctx.fillRect(x+2,y+2,28,28);ctx.strokeStyle="#451a03";ctx.strokeRect(x+2,y+2,28,28);ctx.beginPath();ctx.moveTo(x+2,y+16);ctx.lineTo(x+30,y+16);ctx.moveTo(x+16,y+2);ctx.lineTo(x+16,y+30);ctx.stroke();}
-  if(t===STEEL){ctx.fillStyle="#94a3b8";ctx.fillRect(x+2,y+2,28,28);ctx.fillStyle="#475569";ctx.fillRect(x+7,y+7,18,18);}
-  if(t===WATER){ctx.fillStyle="#2563eb";ctx.fillRect(x+2,y+2,28,28);ctx.fillStyle="#93c5fd";ctx.fillRect(x+6,y+12,20,4);ctx.fillRect(x+10,y+22,12,3);}
-  if(t===GRASS){ctx.fillStyle="rgba(22,101,52,.88)";ctx.fillRect(x+1,y+1,30,30);ctx.strokeStyle="#22c55e";for(let i=0;i<5;i++){ctx.beginPath();ctx.moveTo(x+5+i*5,y+28);ctx.lineTo(x+10+i*4,y+6);ctx.stroke();}}
-  if(t===BASE){ctx.fillStyle="#facc15";ctx.fillRect(x+6,y+8,20,22);ctx.fillStyle="#78350f";ctx.fillRect(x+11,y+16,10,14);ctx.fillStyle="#fef3c7";ctx.beginPath();ctx.moveTo(x+16,y+4);ctx.lineTo(x+27,y+14);ctx.lineTo(x+5,y+14);ctx.closePath();ctx.fill();}
-}
-function drawTank(t){
-  ctx.save();ctx.translate(t.x+15,t.y+15);ctx.rotate({up:0,right:Math.PI/2,down:Math.PI,left:-Math.PI/2}[t.dir]||0);
-  ctx.fillStyle=t.color;ctx.fillRect(-15,-15,30,30);ctx.fillStyle="#111827";ctx.fillRect(-12,-12,6,24);ctx.fillRect(6,-12,6,24);ctx.fillStyle="#e5e7eb";ctx.fillRect(-4,-25,8,24);ctx.fillStyle="#fde68a";ctx.beginPath();ctx.arc(0,0,7,0,Math.PI*2);ctx.fill();ctx.restore();
-  if(t.nick){ctx.textAlign="center";ctx.font="12px Arial";ctx.fillStyle="#fff";ctx.fillText(t.nick,t.x+15,t.y-10)}
-  if(t.maxHp>1){ctx.fillStyle="#111827";ctx.fillRect(t.x,t.y-7,30,4);ctx.fillStyle="#f43f5e";ctx.fillRect(t.x,t.y-7,30*t.hp/t.maxHp,4)}
-}
-function draw(){
-  if(!latest)return;
-  ctx.fillStyle="#020617";ctx.fillRect(0,0,672,672);
-  ctx.strokeStyle="rgba(148,163,184,.06)";
-  for(let i=0;i<=21;i++){ctx.beginPath();ctx.moveTo(i*32,0);ctx.lineTo(i*32,672);ctx.stroke();ctx.beginPath();ctx.moveTo(0,i*32);ctx.lineTo(672,i*32);ctx.stroke();}
-  for(let r=0;r<21;r++)for(let c=0;c<21;c++)if(latest.map[r][c]!==GRASS)drawTile(c,r,latest.map[r][c]);
-  latest.powerUps.forEach(u=>{ctx.textAlign="center";ctx.font="22px Arial";ctx.fillStyle="rgba(255,255,255,.16)";ctx.beginPath();ctx.arc(u.x+13,u.y+13,18,0,Math.PI*2);ctx.fill();ctx.fillText(POWER_ICON[u.type]||"?",u.x+13,u.y+21)});
-  latest.players.filter(p=>p.alive).forEach(p=>drawTank({...p,nick:p.nick}));
-  latest.enemies.forEach(drawTank);
-  latest.bullets.forEach(b=>{ctx.fillStyle=b.laser?"#fb7185":(b.owner==="player"?"#facc15":"#f87171");ctx.fillRect(b.x,b.y,b.size,b.size)});
-  for(let r=0;r<21;r++)for(let c=0;c<21;c++)if(latest.map[r][c]===GRASS)drawTile(c,r,GRASS);
-  latest.effects.forEach(e=>{ctx.globalAlpha=Math.max(0,e.life/35); if(e.type==="text"){ctx.font="bold 16px Arial";ctx.fillStyle="#fde68a";ctx.fillText(POWER_NAME[e.text]||e.text,e.x+15,e.y)} else {ctx.fillStyle=e.type==="spark"?"#e5e7eb":"#f97316";ctx.fillRect(e.x-5,e.y-5,10,10)} ctx.globalAlpha=1});
-  if(latest.state==="win"||latest.state==="gameover"){ctx.fillStyle="rgba(0,0,0,.72)";ctx.fillRect(0,0,672,672);ctx.textAlign="center";ctx.fillStyle="#fff";ctx.font="bold 42px Arial";ctx.fillText(latest.state==="win"?"胜利！":"游戏结束",336,280);ctx.font="22px Arial";ctx.fillText("回大厅可重新开局",336,330)}
-}
+const sk=document.getElementById('skin');
+const lv=document.getElementById('levelSelect');
+Object.entries(TANK_SHARED.SKINS).forEach(([id,s])=>sk.insertAdjacentHTML('beforeend',`<option value="${id}">${s.name}</option>`));
+TANK_SHARED.LEVELS.forEach((l,i)=>lv.insertAdjacentHTML('beforeend',`<option value="${i+1}">${i+1} ${l.name}</option>`));
 </script>
+<script src="/js/app.js"></script>
 </body>
 </html>

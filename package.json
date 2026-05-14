@@ -1,13 +1,8 @@
 {
-  "name": "tank-online-party",
-  "version": "1.0.0",
-  "description": "A lightweight online co-op tank web game",
+  "name": "tank-online-party-upgraded",
+  "version": "2.0.0",
+  "description": "Tank Hero web game with single player, shop, saves, and online co-op rooms",
   "main": "server.js",
-  "scripts": {
-    "start": "node server.js"
-  },
-  "dependencies": {
-    "express": "^4.19.2",
-    "ws": "^8.18.0"
-  }
+  "scripts": { "start": "node server.js" },
+  "dependencies": { "express": "^4.19.2", "ws": "^8.18.0" }
 }
