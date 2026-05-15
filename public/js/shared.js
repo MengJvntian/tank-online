@@ -17,7 +17,7 @@ window.TANK_SHARED = (() => {
     scout:{name:'侦察兵',icon:'👻',price:2200,desc:'技能：短时间加速、穿墙并吸附道具'},
     bomber:{name:'爆破手',icon:'☢️',price:3600,desc:'技能：战术核弹，清小兵并重创 Boss'}
   };
-  const POWER_ICON={life:'❤️',speed:'⚡',double:'🔥',shield:'🛡',bomb:'💣',freeze:'❄️',repair:'🔧',laser:'🔴',coin:'🪙',wall:'🧱',ghost:'👻',magnet:'🧲',drone:'🚁',heartRain:'💖',rapid:'⚡🔥',nuke:'☢️',star:'⭐',barrier:'🧱✨'};
+  const POWER_ICON={life:'❤️',speed:'⚡',double:'🔥',shield:'🛡',bomb:'💣',freeze:'❄️',repair:'🔧',laser:'🔴',coin:'🪙',wall:'🧱',ghost:'👻',magnet:'🧲',drone:'🚁',heartRain:'💖',rapid:'⚡',nuke:'☢️',star:'⭐',barrier:'🧱'};
   const POWER_NAME={life:'回血',speed:'加速',double:'双发',shield:'护盾',bomb:'清屏',freeze:'冰冻',repair:'修复基地',laser:'穿透',coin:'金币礼包',wall:'基地钢化',ghost:'穿墙',magnet:'磁铁',drone:'无人机',heartRain:'全队回血',rapid:'极速射击',nuke:'核弹',star:'超级星星',barrier:'临时屏障'};
   const LEVELS=[
 {name:"训练营",enemyTotal:16,reward:100,desc:"适合上手，敌人较少",map:[".....................","..B..B..B...B..B..B..","..B..B..B...B..B..B..",".....................","....SS.......SS......",".....................","..BB....BBB....BB....","..BB.....G.....BB....","..........W..........","..........W..........","....BB.........BB....","....BB.........BB....","..........G..........","..SS.............SS..",".....................","..B..B..B...B..B..B..","..B..B..B...B..B..B..",".........BBB.........",".........BEB.........","........BBBBB........","....................."]},
