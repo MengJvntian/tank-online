@@ -3,13 +3,13 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-<title>坦克小英雄 Plus</title>
+<title>坦克大战</title>
 <link rel="stylesheet" href="/css/style.css" />
 </head>
 <body>
 <div class="app">
   <div class="top">
-    <div class="title">坦克小英雄 Plus</div>
+    <div class="title">坦克大战</div>
     <div class="row">
       <div class="badge">🪙 <span id="coinText">0</span></div>
       <div class="badge">🏆 <span id="bestText">0</span></div>
@@ -20,14 +20,15 @@
   <section id="home" class="screen active">
     <div class="hero">
       <div>
-        <h1>手机电脑<br>都能开战</h1>
-        <p>新增单机闯关、个人商店、本地账户存档、联机准备机制、房主开局限制、更多成长升级。朋友点链接就能玩，你自己也可以单机刷金币。</p>
+        <h1>坦克大战<br>开战！</h1>
+        <p>单机闯关、多人联机、个人商店、Boss 战和职业技能都已经就绪。电脑和手机都能玩，朋友打开链接即可加入。</p>
         <div class="row">
           <button class="green" onclick="show('levels')">单机闯关</button>
           <button class="gold" onclick="show('lobby')">联机大厅</button>
           <button onclick="show('shop')">个人商店</button>
           <button class="gray" onclick="show('profile')">个人资料</button>
           <button class="gray" onclick="show('help')">玩法说明</button>
+          <button class="gray" onclick="show('versionLog')">版本日志</button>
         </div>
       </div>
       <div class="panel">
@@ -39,7 +40,7 @@
         <label>职业</label>
         <select id="classId" onchange="saveProfileInputs()"></select>
         <p id="classDesc" class="small"></p>
-        <p class="muted">账户数据保存在当前浏览器 localStorage：金币、皮肤、升级、最高分、单机解锁进度都会保留。换浏览器或清缓存会丢失。</p>
+        <p class="muted">账户数据保存在当前浏览器：金币、皮肤、技能、升级和单机进度都会保留。</p>
       </div>
     </div>
   </section>
@@ -68,13 +69,26 @@
 
   <section id="help" class="screen">
     <div class="panel">
-      <h2>玩法说明</h2>
-      <p class="muted">
-        单机：自己刷关、刷金币、解锁商店。联机：最多 4 人合作，房主创建房间，所有人准备后房主才能开始。手机端可用屏幕虚拟按键，电脑端用键盘。<br>
-        操作：WASD / 方向键移动，空格射击。道具：❤️回血、⚡加速、🔥双发、🛡护盾、💣清屏、❄️冰冻、🔧修复、🧱钢化、🔴激光、👻穿墙、🧲磁铁、🚁无人机。<br>
-        职业：突击手、守护者、维修兵、侦察兵、爆破手都有专属技能。电脑按 E，手机按“技能”。商店：皮肤、生命、火力、速度、磁力、金币收益、复活强化都会影响单机，也会随联机资料发送到服务器。
-      </p>
-      <button class="gray" onclick="show('home')">返回</button>
+      <div class="row" style="justify-content:space-between"><h2>玩法说明</h2><button class="gray" onclick="show('home')">返回主页</button></div>
+      <div class="card">
+        <h3>基础操作</h3>
+        <p class="muted">电脑：WASD / 方向键移动，空格开火，E 使用职业技能。手机：使用屏幕方向键、开火键和技能键。</p>
+      </div>
+      <div class="card">
+        <h3>游戏目标</h3>
+        <p class="muted">保护基地，消灭全部敌人即可通关。Boss 关需要优先躲避弹幕并集中火力击败 Boss。</p>
+      </div>
+      <div class="card">
+        <h3>成长方式</h3>
+        <p class="muted">单机或联机都可以获得金币。金币可在个人商店购买皮肤、职业技能和强化升级。</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="versionLog" class="screen">
+    <div class="panel">
+      <div class="row" style="justify-content:space-between"><h2>版本日志</h2><button class="gray" onclick="show('home')">返回主页</button></div>
+      <div id="versionLogBox" class="version-log"></div>
     </div>
   </section>
 
@@ -158,7 +172,7 @@
         <div class="stat"><span>剩余敌人</span><b id="gEnemy">0</b></div>
         <div class="stat"><span>我的生命</span><b id="gLife">3</b></div>
         <div class="stat"><span>我的道具</span><b id="gBuff">无</b></div>
-        <div class="stat"><span>职业技能</span><b id="gSkill">E / 技能键</b></div>
+        <div class="stat skill-stat"><span>职业技能</span><b id="gSkill">E / 技能键</b></div>
         <div class="row"><button class="red" onclick="location.reload()">退出</button></div>
         <h3>队友/玩家</h3>
         <div id="team" class="players"></div>
