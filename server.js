@@ -39,8 +39,56 @@ function makeRoom(code,level=1,hostId=null,opts={}){return{code,level,hostId,roo
 function publicRoom(room){return{code:room.code,level:room.level,state:room.state,hostId:room.hostId,roomName:room.roomName,isPublic:room.isPublic,players:[...room.players.values()].map(p=>({id:p.id,nick:p.nick,skin:p.skin,ready:p.ready,life:p.life,score:p.score,coins:p.coins,classId:p.classId})),maxPlayers:4};}
 function findBaseCells(room){const cells=[];for(let r=0;r<room.map.length;r++)for(let c=0;c<(room.map[r]||[]).length;c++)if(room.map[r][c]===BASE)cells.push([r,c]);return cells;}
 function baseProtectCells(room){const set=new Set();for(const [br,bc] of findBaseCells(room)){for(let r=br-1;r<=br+1;r++)for(let c=bc-1;c<=bc+1;c++){if(r===br&&c===bc)continue;if(!room.map[r]||room.map[r][c]===undefined)continue;set.add(`${r},${c}`);}}return [...set].map(s=>s.split(',').map(Number));}
+function ensureBaseCover(room){
+  for(const [br,bc] of findBaseCells(room)){
+    for(const [dr,dc] of [[-1,0],[1,0],[0,-1],[0,1]]){
+      const r=br+dr,c=bc+dc;
+      if(!room.map[r]||room.map[r][c]===undefined)continue;
+      const tile=room.map[r][c];
+      if(tile!==BRICK&&tile!==STEEL&&tile!==REINFORCED)room.map[r][c]=BRICK;
+    }
+  }
+}
+function isSpawnFree(room,x,y,size,used=[]){
+  if(blocked(room,x,y,size,false))return false;
+  const box={x,y,size};
+  for(const u of used)if(rect(box,{x:u.x,y:u.y,size}))return false;
+  for(const e of room.enemies||[])if(rect(box,e))return false;
+  for(const p of room.players?.values?.()||[])if(p.alive&&rect(box,p))return false;
+  return true;
+}
+function playerSpawnPos(room,idx=0,used=[]){
+  const size=26,cands=[],bases=findBaseCells(room);
+  for(const [br,bc] of bases){
+    const dirs=[
+      [0,2,'up'],[0,-2,'down'],[2,0,'left'],[-2,0,'right'],
+      [1,2,'up'],[-1,2,'up'],[1,-2,'down'],[-1,-2,'down'],
+      [2,1,'left'],[2,-1,'left'],[-2,1,'right'],[-2,-1,'right'],
+      [2,2,'up'],[-2,2,'up'],[2,-2,'down'],[-2,-2,'down']
+    ];
+    for(const [dr,dc,dir] of dirs)cands.push({x:(bc+dc)*TILE+3,y:(br+dr)*TILE+3,dir});
+  }
+  cands.push(...spawnSpots(room).map(s=>({x:s.x,y:s.y,dir:s.dir||'up'})));
+  const start=idx%cands.length;
+  for(let i=0;i<cands.length;i++){const cand=cands[(start+i)%cands.length];if(isSpawnFree(room,cand.x,cand.y,size,used))return cand;}
+  return spawnPos(idx);
+}
+function safeTeleport(room,e){
+  const size=e.size||26,cands=[];
+  for(const p of room.players.values())if(p.alive){
+    for(const [dx,dy] of [[-3,0],[3,0],[0,-3],[0,3],[-3,-3],[3,-3],[-3,3],[3,3]]){
+      cands.push({x:Math.round((p.x/TILE+dx))*TILE+3,y:Math.round((p.y/TILE+dy))*TILE+3});
+    }
+  }
+  for(let r=1;r<ROWS-1;r+=2)for(let c=1;c<COLS-1;c+=2)cands.push({x:c*TILE+3,y:r*TILE+3});
+  for(let tries=0;tries<80;tries++){
+    const cand=cands[Math.floor(Math.random()*cands.length)];
+    if(cand&&!blocked(room,cand.x,cand.y,size,false)){e.x=cand.x;e.y=cand.y;return true;}
+  }
+  return false;
+}
 function spawnSpots(room){const size=26,max=W-size,level=LEVELS[room.level-1]||{};if(level.spawn==='all'||/中央基地|镜像战场|环形水城|螺旋迷宫/.test(level.name||'')){return[{x:0,y:0,dir:'down'},{x:5*TILE,y:0,dir:'down'},{x:10*TILE,y:0,dir:'down'},{x:15*TILE,y:0,dir:'down'},{x:max,y:0,dir:'down'},{x:0,y:5*TILE,dir:'right'},{x:0,y:10*TILE,dir:'right'},{x:0,y:15*TILE,dir:'right'},{x:max,y:5*TILE,dir:'left'},{x:max,y:10*TILE,dir:'left'},{x:max,y:15*TILE,dir:'left'},{x:0,y:max,dir:'up'},{x:5*TILE,y:max,dir:'up'},{x:10*TILE,y:max,dir:'up'},{x:15*TILE,y:max,dir:'up'},{x:max,y:max,dir:'up'}];}return[{x:0,y:0,dir:'down'},{x:5*TILE,y:0,dir:'down'},{x:10*TILE,y:0,dir:'down'},{x:15*TILE,y:0,dir:'down'},{x:max,y:0,dir:'down'}];}
-function blocked(room,x,y,size,ghost=false){if(x<0||y<0||x+size>W||y+size>H)return true;const l=Math.floor(x/TILE),r=Math.floor((x+size-1)/TILE),t=Math.floor(y/TILE),b=Math.floor((y+size-1)/TILE);for(let row=t;row<=b;row++)for(let col=l;col<=r;col++){const tile=room.map[row]?.[col]??STEEL;if(ghost&&[BRICK,REINFORCED].includes(tile))continue;if([BRICK,STEEL,WATER,BASE,REINFORCED].includes(tile))return true;}return false;}
+function blocked(room,x,y,size,ghost=false){if(x<0||y<0||x+size>W||y+size>H)return true;const l=Math.floor(x/TILE),r=Math.floor((x+size-1)/TILE),t=Math.floor(y/TILE),b=Math.floor((y+size-1)/TILE);for(let row=t;row<=b;row++)for(let col=l;col<=r;col++){const tile=room.map[row]?.[col]??STEEL;if(ghost&&[BRICK,REINFORCED,STEEL,WATER].includes(tile))continue;if([BRICK,STEEL,WATER,BASE,REINFORCED].includes(tile))return true;}return false;}
 function rect(a,b){return a.x<b.x+b.size&&a.x+a.size>b.x&&a.y<b.y+b.size&&a.y+a.size>b.y;}
 function levelList(){return LEVELS.map((l,i)=>({i:i+1,name:l.name,reward:l.reward,enemyTotal:l.enemyTotal,desc:l.desc||'',boss:!!l.boss}));}
 
@@ -49,7 +97,7 @@ function sendRoomList(ws){send(ws,{type:'roomList',rooms:publicRoomList()});}
 function broadcastRoomList(){for(const client of wss.clients)if(client.readyState===WebSocket.OPEN)sendRoomList(client);}
 
 function newPlayer(ws,msg,idx){const pos=spawnPos(idx);const u=msg.upgrades||{};return{id:'P'+nextPlayerId++,ws,nick:(msg.nick||'玩家').slice(0,10),skin:SKINS[msg.skin]?msg.skin:'green',classId:CLASSES[msg.classId]?msg.classId:'none',x:pos.x,y:pos.y,size:26,dir:'up',input:{},ready:false,life:3+(u.life||0),maxLife:3+(u.life||0),extraRevive:u.revive||0,score:0,coins:0,cooldown:0,skillCooldown:0,buffs:{speed:0,double:0,shield:0,freeze:0,laser:0,ghost:0,magnet:0,drone:0,rapid:0},alive:true,upgrades:{life:u.life||0,fire:u.fire||0,speed:u.speed||0,magnet:u.magnet||0,income:u.income||0,revive:u.revive||0}};}
-function startRoom(room,level=room.level){room.level=level;room.state='playing';room.map=parseMap(level);room.bullets=[];room.enemies=[];room.powerUps=[];room.effects=[];room.enemyRemain=LEVELS[level-1].enemyTotal;room.spawnTimer=0;room.tick=0;room.score=0;room.coins=0;room.baseAlive=true;room.message='战斗开始';let i=0;for(const p of room.players.values()){const pos=spawnPos(i++);Object.assign(p,{x:pos.x,y:pos.y,dir:'up',life:p.maxLife,score:0,coins:0,cooldown:0,skillCooldown:0,alive:true,ready:false});p.buffs={speed:0,double:0,shield:0,freeze:0,laser:0,ghost:0,magnet:0,drone:0,rapid:0};}broadcast(room,{type:'start',room:publicRoom(room)});}
+function startRoom(room,level=room.level){room.level=level;room.state='playing';room.map=parseMap(level);ensureBaseCover(room);room.bullets=[];room.enemies=[];room.powerUps=[];room.effects=[];room.enemyRemain=LEVELS[level-1].enemyTotal;room.spawnTimer=0;room.tick=0;room.score=0;room.coins=0;room.baseAlive=true;room.message='战斗开始';let i=0,used=[];for(const p of room.players.values()){const pos=playerSpawnPos(room,i++,used);used.push(pos);Object.assign(p,{x:pos.x,y:pos.y,dir:pos.dir||'up',life:p.maxLife,score:0,coins:0,cooldown:0,skillCooldown:0,alive:true,ready:false});p.buffs={speed:0,double:0,shield:0,freeze:0,laser:0,ghost:0,magnet:0,drone:0,rapid:0};}broadcast(room,{type:'start',room:publicRoom(room)});}
 function createEnemy(room,kind){const spots=spawnSpots(room);let sp=null;for(let tries=0;tries<spots.length*2;tries++){const cand=spots[Math.floor(Math.random()*spots.length)];if(!blocked(room,cand.x,cand.y,26,false)){sp=cand;break;}}if(!sp)return false;const stat={normal:{hp:1,speed:1.2,color:'#ef4444',score:100},fast:{hp:1,speed:2.0,color:'#f97316',score:150},heavy:{hp:3,speed:.9,color:'#a855f7',score:250},sniper:{hp:1,speed:1.0,color:'#06b6d4',score:220},suicide:{hp:1,speed:2.45,color:'#f59e0b',score:180},shield:{hp:2,speed:1.05,color:'#22d3ee',score:260},elite:{hp:4,speed:1.35,color:'#84cc16',score:360},bossFrost:{hp:24,speed:.86,color:'#60a5fa',score:1700},bossThunder:{hp:28,speed:1.0,color:'#facc15',score:1900},bossShadow:{hp:30,speed:1.08,color:'#7c3aed',score:2100},bossDoom:{hp:32,speed:.92,color:'#be123c',score:2600},boss:{hp:16,speed:.9,color:'#be123c',score:1500}}[kind];const size = String(kind).startsWith('boss') ? 30 : (kind==='heavy'||kind==='elite'?30:(kind==='fast'||kind==='suicide'?24:26));room.enemies.push({id:'E'+Math.random().toString(36).slice(2,8),x:sp.x,y:sp.y,size,dir:sp.dir||'down',kind,hp:stat.hp,maxHp:stat.hp,speed:stat.speed,color:stat.color,score:stat.score,cooldown:60,moveTimer:20});return true;}
 function shoot(room,owner,tank){if(tank.cooldown>0)return;const laser=owner==='player'&&tank.buffs.laser>0,double=owner==='player'&&tank.buffs.double>0;for(const side of (double?[-1,1]:[0])){let x=tank.x+tank.size/2-4,y=tank.y+tank.size/2-4,s=side*7;if(tank.dir==='up'){y-=13;x+=s}if(tank.dir==='down'){y+=13;x+=s}if(tank.dir==='left'){x-=13;y+=s}if(tank.dir==='right'){x+=13;y+=s}room.bullets.push({id:'B'+Math.random().toString(36).slice(2,8),x,y,size:laser?10:8,dir:tank.dir,speed:owner==='player'?(laser?9:6.5):4.7,owner,ownerId:tank.id,laser});}tank.cooldown=owner==='player'?Math.max(5,(tank.buffs?.rapid>0?7:(laser?12:18))-(tank.upgrades?.fire||0)*3):(tank.kind==='sniper'?45:(String(tank.kind).startsWith('boss')?38:75));}
 function effect(room,type,x,y,text=''){room.effects.push({type,x,y,text,life:35});}
@@ -114,9 +162,9 @@ function hurtPlayer(room,p,damage=1){
   if(p.buffs.shield>0){p.buffs.shield=0;effect(room,'spark',p.x+15,p.y+15);return;}
   p.life-=damage;effect(room,'boom',p.x+15,p.y+15);
   if(p.life<=0){
-    if(p.extraRevive>0){p.extraRevive--;p.life=1;const pos=spawnPos([...room.players.values()].indexOf(p));p.x=pos.x;p.y=pos.y;effect(room,'text',p.x,p.y,'复活');}
+    if(p.extraRevive>0){p.extraRevive--;p.life=1;const pos=playerSpawnPos(room,[...room.players.values()].indexOf(p));p.x=pos.x;p.y=pos.y;p.dir=pos.dir||'up';effect(room,'text',p.x,p.y,'复活');}
     else p.alive=false;
-  }else{const pos=spawnPos([...room.players.values()].indexOf(p));p.x=pos.x;p.y=pos.y;}
+  }else{const pos=playerSpawnPos(room,[...room.players.values()].indexOf(p));p.x=pos.x;p.y=pos.y;p.dir=pos.dir||'up';}
 }
 
 
@@ -124,7 +172,7 @@ function bossAbility(room,e){
   if(!String(e.kind).startsWith('boss'))return;
   if(e.kind==='bossFrost'&&room.tick%120===0){for(const p of room.players.values())if(p.alive)p.buffs.freeze=110;effect(room,'text',e.x,e.y,'冰霜领域');}
   if(e.kind==='bossThunder'&&room.tick%90===0){for(const dir of ['up','down','left','right'])room.bullets.push({id:'BT'+Math.random(),x:e.x+11,y:e.y+11,size:10,dir,speed:6.1,owner:'enemy',ownerId:e.id,laser:true});effect(room,'text',e.x,e.y,'雷霆齐射');}
-  if(e.kind==='bossShadow'&&room.tick%130===0){e.x=Math.max(0,Math.min(W-30,e.x+(Math.random()-.5)*260));e.y=Math.max(0,Math.min(H/2,e.y+(Math.random()-.5)*160));createEnemy(room,'fast');effect(room,'text',e.x,e.y,'暗影召唤');}
+  if(e.kind==='bossShadow'&&room.tick%130===0){safeTeleport(room,e);createEnemy(room,'fast');effect(room,'text',e.x,e.y,'暗影召唤');}
   if(e.kind==='bossDoom'&&room.tick%300===0){for(const p of room.players.values())if(p.alive)hurtPlayer(room,p,1);effect(room,'text',e.x,e.y,'末日冲击');}
 }
 

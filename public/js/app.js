@@ -36,6 +36,7 @@ function renderVersionLog(){
   const box=$('versionLogBox');
   if(!box)return;
   const logs=[
+    {v:'v3.0.3',name:'基地防线与复活优化',items:['每个基地开局自动保证上下左右至少有砖块或钢墙遮挡，避免中置基地暴毙','玩家复活点改为自动生成在真实基地附近，并避开墙体、基地和其他玩家','穿墙状态现在可以穿过砖块、钢墙和水域，但仍不能站到基地上','暗影 Boss 瞬移改为寻找安全空位，降低瞬移进墙里卡住的概率','同步优化单机和联机两套战斗逻辑']},
     {v:'v3.0.2',name:'基地防御与出怪优化',items:['基地加固与修复改为自动围绕真实基地位置生效，不再固定处理地图底部砖块','基地技能不会覆盖水域、钢墙、草丛等特殊地形','Boss 体型调整为正常坦克尺寸，移动更灵活，威慑感来自技能和血量','中央基地、环形水城、螺旋迷宫、镜像战场等地图支持多方向出怪','道具图标统一改为单字符显示，避免手机端识别困难']},
     {v:'v3.0.1',name:'Boss 节奏修正',items:['重新调整关卡顺序，移除 9-12 连续 Boss 的体验问题','保留四个专属 Boss：冰霜、雷霆、暗影、末日，并分别穿插在普通关卡之间','将 9-12 关替换/调整为普通关卡与单个暗影 Boss 关，节奏更平滑','联机与单机 Boss 生成逻辑改为读取关卡 bossType，避免 Boss 类型因为关卡编号错乱']},
     {v:'v3.0.0',name:'钢墙规则与地图扩展',items:['钢墙改为完全不可破坏、不可通行、阻挡所有子弹','水域改为不可通行但允许子弹穿透','新增非常规地图，包括中央基地、环形水城、螺旋迷宫和穿插 Boss 关','强化普通敌人的外观差异：快速、重甲、狙击、自爆、护盾、精英坦克更容易识别','玩法说明补充地形、道具、敌人和 Boss 规则','页面与战斗视觉效果进一步精修']},
@@ -83,9 +84,41 @@ const single={state:'off'};
 function startSingle(level){saveProfileInputs();selfId='LOCAL';single.state='playing';single.room=makeLocal(level);latest=serializeLocal();show('game');}
 function findLocalBaseCells(room){const cells=[];for(let r=0;r<room.map.length;r++)for(let c=0;c<(room.map[r]||[]).length;c++)if(room.map[r][c]===S.BASE)cells.push([r,c]);return cells;}
 function localBaseProtectCells(room){const set=new Set();for(const [br,bc] of findLocalBaseCells(room)){for(let r=br-1;r<=br+1;r++)for(let c=bc-1;c<=bc+1;c++){if(r===br&&c===bc)continue;if(!room.map[r]||room.map[r][c]===undefined)continue;set.add(`${r},${c}`);}}return [...set].map(s=>s.split(',').map(Number));}
+function ensureLocalBaseCover(room){
+  for(const [br,bc] of findLocalBaseCells(room)){
+    for(const [dr,dc] of [[-1,0],[1,0],[0,-1],[0,1]]){
+      const r=br+dr,c=bc+dc;if(!room.map[r]||room.map[r][c]===undefined)continue;
+      const tile=room.map[r][c];if(tile!==S.BRICK&&tile!==S.STEEL&&tile!==S.REINFORCED)room.map[r][c]=S.BRICK;
+    }
+  }
+}
 function localSpawnSpots(room){const size=26,max=S.W-size,level=S.LEVELS[room.level-1]||{};if(level.spawn==='all'||/中央基地|镜像战场|环形水城|螺旋迷宫/.test(level.name||'')){return[{x:0,y:0,dir:'down'},{x:5*S.TILE,y:0,dir:'down'},{x:10*S.TILE,y:0,dir:'down'},{x:15*S.TILE,y:0,dir:'down'},{x:max,y:0,dir:'down'},{x:0,y:5*S.TILE,dir:'right'},{x:0,y:10*S.TILE,dir:'right'},{x:0,y:15*S.TILE,dir:'right'},{x:max,y:5*S.TILE,dir:'left'},{x:max,y:10*S.TILE,dir:'left'},{x:max,y:15*S.TILE,dir:'left'},{x:0,y:max,dir:'up'},{x:5*S.TILE,y:max,dir:'up'},{x:10*S.TILE,y:max,dir:'up'},{x:15*S.TILE,y:max,dir:'up'},{x:max,y:max,dir:'up'}];}return[{x:0,y:0,dir:'down'},{x:5*S.TILE,y:0,dir:'down'},{x:10*S.TILE,y:0,dir:'down'},{x:15*S.TILE,y:0,dir:'down'},{x:max,y:0,dir:'down'}];}
-function makeLocal(level){const p={id:'LOCAL',nick:(save.nick||'').trim()||'玩家',skin:(save.ownedSkins.includes(save.selectedSkin)?save.selectedSkin:'green'),classId:(save.ownedSkills.includes(save.classId)?save.classId:'none'),color:S.SKINS[save.ownedSkins.includes(save.selectedSkin)?save.selectedSkin:'green'].color,x:9*S.TILE+1,y:20*S.TILE+1,size:26,dir:'up',input:keys,ready:true,life:3+save.upgrades.life,maxLife:3+save.upgrades.life,extraRevive:save.upgrades.revive,score:0,coins:0,cooldown:0,skillCooldown:0,buffs:{speed:0,double:0,shield:0,freeze:0,laser:0,ghost:0,magnet:0,drone:0,rapid:0},alive:true};return{code:'单机',level,state:'playing',map:S.parseMap(level),players:[p],bullets:[],enemies:[],powerUps:[],effects:[],enemyRemain:S.LEVELS[level-1].enemyTotal,spawnTimer:0,tick:0,score:0,coins:0,message:'单机挑战'}}
-function lblocked(room,x,y,size,ghost=false){if(x<0||y<0||x+size>S.W||y+size>S.H)return true;const l=Math.floor(x/S.TILE),r=Math.floor((x+size-1)/S.TILE),t=Math.floor(y/S.TILE),b=Math.floor((y+size-1)/S.TILE);for(let row=t;row<=b;row++)for(let col=l;col<=r;col++){const tile=room.map[row]?.[col]??S.STEEL;if(ghost&&[S.BRICK,S.REINFORCED].includes(tile))continue;if([S.BRICK,S.STEEL,S.WATER,S.BASE,S.REINFORCED].includes(tile))return true;}return false;}
+function isLocalSpawnFree(room,x,y,size,used=[]){
+  if(lblocked(room,x,y,size,false))return false;
+  const box={x,y,size};for(const u of used)if(lrect(box,{x:u.x,y:u.y,size}))return false;
+  for(const e of room.enemies||[])if(lrect(box,e))return false;
+  for(const p of room.players||[])if(p.alive&&lrect(box,p))return false;
+  return true;
+}
+function localPlayerSpawnPos(room,idx=0,used=[]){
+  const size=26,cands=[],bases=findLocalBaseCells(room);
+  for(const [br,bc] of bases){
+    const dirs=[[0,2,'up'],[0,-2,'down'],[2,0,'left'],[-2,0,'right'],[1,2,'up'],[-1,2,'up'],[1,-2,'down'],[-1,-2,'down'],[2,1,'left'],[2,-1,'left'],[-2,1,'right'],[-2,-1,'right'],[2,2,'up'],[-2,2,'up'],[2,-2,'down'],[-2,-2,'down']];
+    for(const [dr,dc,dir] of dirs)cands.push({x:(bc+dc)*S.TILE+3,y:(br+dr)*S.TILE+3,dir});
+  }
+  cands.push(...localSpawnSpots(room).map(s=>({x:s.x,y:s.y,dir:s.dir||'up'})));
+  const start=idx%cands.length;for(let i=0;i<cands.length;i++){const cand=cands[(start+i)%cands.length];if(isLocalSpawnFree(room,cand.x,cand.y,size,used))return cand;}
+  return {x:9*S.TILE+1,y:20*S.TILE+1,dir:'up'};
+}
+function safeLocalTeleport(room,e,p){
+  const size=e.size||26,cands=[];
+  if(p&&p.alive){for(const [dx,dy] of [[-3,0],[3,0],[0,-3],[0,3],[-3,-3],[3,-3],[-3,3],[3,3]])cands.push({x:Math.round((p.x/S.TILE+dx))*S.TILE+3,y:Math.round((p.y/S.TILE+dy))*S.TILE+3});}
+  for(let r=1;r<S.ROWS-1;r+=2)for(let c=1;c<S.COLS-1;c+=2)cands.push({x:c*S.TILE+3,y:r*S.TILE+3});
+  for(let tries=0;tries<80;tries++){const cand=cands[Math.floor(Math.random()*cands.length)];if(cand&&!lblocked(room,cand.x,cand.y,size,false)){e.x=cand.x;e.y=cand.y;return true;}}
+  return false;
+}
+function makeLocal(level){const room={code:'单机',level,state:'playing',map:S.parseMap(level),players:[],bullets:[],enemies:[],powerUps:[],effects:[],enemyRemain:S.LEVELS[level-1].enemyTotal,spawnTimer:0,tick:0,score:0,coins:0,message:'单机挑战'};ensureLocalBaseCover(room);const pos=localPlayerSpawnPos(room,0);const p={id:'LOCAL',nick:(save.nick||'').trim()||'玩家',skin:(save.ownedSkins.includes(save.selectedSkin)?save.selectedSkin:'green'),classId:(save.ownedSkills.includes(save.classId)?save.classId:'none'),color:S.SKINS[save.ownedSkins.includes(save.selectedSkin)?save.selectedSkin:'green'].color,x:pos.x,y:pos.y,size:26,dir:pos.dir||'up',input:keys,ready:true,life:3+save.upgrades.life,maxLife:3+save.upgrades.life,extraRevive:save.upgrades.revive,score:0,coins:0,cooldown:0,skillCooldown:0,buffs:{speed:0,double:0,shield:0,freeze:0,laser:0,ghost:0,magnet:0,drone:0,rapid:0},alive:true};room.players.push(p);return room}
+function lblocked(room,x,y,size,ghost=false){if(x<0||y<0||x+size>S.W||y+size>S.H)return true;const l=Math.floor(x/S.TILE),r=Math.floor((x+size-1)/S.TILE),t=Math.floor(y/S.TILE),b=Math.floor((y+size-1)/S.TILE);for(let row=t;row<=b;row++)for(let col=l;col<=r;col++){const tile=room.map[row]?.[col]??S.STEEL;if(ghost&&[S.BRICK,S.REINFORCED,S.STEEL,S.WATER].includes(tile))continue;if([S.BRICK,S.STEEL,S.WATER,S.BASE,S.REINFORCED].includes(tile))return true;}return false;}
 function lrect(a,b){return a.x<b.x+b.size&&a.x+a.size>b.x&&a.y<b.y+b.size&&a.y+a.size>b.y;}
 function lshoot(room,owner,t){if(t.cooldown>0)return;const laser=owner==='player'&&t.buffs.laser>0,double=owner==='player'&&t.buffs.double>0;for(const side of (double?[-1,1]:[0])){let x=t.x+11,y=t.y+11,s=side*7;if(t.dir==='up'){y-=13;x+=s}if(t.dir==='down'){y+=13;x+=s}if(t.dir==='left'){x-=13;y+=s}if(t.dir==='right'){x+=13;y+=s}room.bullets.push({x,y,size:laser?10:8,dir:t.dir,speed:owner==='player'?(laser?9:6.5):4.7,owner,ownerId:t.id,laser});}t.cooldown=owner==='player'?Math.max(5,(t.buffs?.rapid>0?7:(laser?12:18))-save.upgrades.fire*3):75;}
 function spawnEnemy(room){const spots=localSpawnSpots(room);let sp=null;for(let tries=0;tries<spots.length*2;tries++){const cand=spots[Math.floor(Math.random()*spots.length)];if(!lblocked(room,cand.x,cand.y,26)){sp=cand;break;}}if(!sp)return false;let roll=Math.random(),kind='normal';if(S.LEVELS[room.level-1].boss&&room.enemyRemain===1){kind=S.LEVELS[room.level-1].bossType||'bossDoom';}else if(room.level>=8&&roll<.08)kind='elite';else if(room.level>=7&&roll<.15)kind='shield';else if(room.level>=6&&roll<.22)kind='suicide';else if(room.level>=5&&roll<.30)kind='sniper';else if(roll<.18+room.level*.035)kind='heavy';else if(roll<.56)kind='fast';const stat={normal:[1,1.2,'#ef4444',100],fast:[1,2,'#f97316',150],heavy:[3,.9,'#a855f7',250],sniper:[1,1,'#06b6d4',220],suicide:[1,2.45,'#f59e0b',180],shield:[2,1.05,'#22d3ee',260],elite:[4,1.35,'#84cc16',360],bossFrost:[24,.86,'#60a5fa',1700],bossThunder:[28,1.0,'#facc15',1900],bossShadow:[30,1.08,'#7c3aed',2100],bossDoom:[32,.92,'#be123c',2600],boss:[16,.9,'#be123c',1500]}[kind];const size = String(kind).startsWith('boss') ? 30 : (kind==='heavy'||kind==='elite'?30:(kind==='fast'||kind==='suicide'?24:26));room.enemies.push({x:sp.x,y:sp.y,size,dir:sp.dir||'down',kind,hp:stat[0],maxHp:stat[0],speed:stat[1],color:stat[2],score:stat[3],cooldown:60,moveTimer:20});return true;}
@@ -131,9 +164,9 @@ function hurtLocalPlayer(room,p,damage=1){
   if(p.buffs.shield>0){p.buffs.shield=0;room.effects.push({type:'spark',x:p.x+15,y:p.y+15,life:25});return;}
   p.life-=damage;room.effects.push({type:'boom',x:p.x+15,y:p.y+15,life:25});
   if(p.life<=0){
-    if(p.extraRevive>0){p.extraRevive--;p.life=1;p.x=9*S.TILE+1;p.y=20*S.TILE+1;room.effects.push({type:'text',x:p.x,y:p.y,text:'复活',life:35});}
+    if(p.extraRevive>0){p.extraRevive--;p.life=1;const pos=localPlayerSpawnPos(room,0);p.x=pos.x;p.y=pos.y;p.dir=pos.dir||'up';room.effects.push({type:'text',x:p.x,y:p.y,text:'复活',life:35});}
     else p.alive=false;
-  }else{p.x=9*S.TILE+1;p.y=20*S.TILE+1;}
+  }else{const pos=localPlayerSpawnPos(room,0);p.x=pos.x;p.y=pos.y;p.dir=pos.dir||'up';}
 }
 
 
@@ -141,7 +174,7 @@ function localBossAbility(room,e,p){
   if(!String(e.kind).startsWith('boss'))return;
   if(e.kind==='bossFrost'&&room.tick%120===0){p.buffs.freeze=95;room.effects.push({type:'text',x:e.x,y:e.y,text:'冰霜领域',life:35});}
   if(e.kind==='bossThunder'&&room.tick%90===0){['up','down','left','right'].forEach(dir=>room.bullets.push({x:e.x+11,y:e.y+11,size:10,dir,speed:6.1,owner:'enemy',laser:true}));room.effects.push({type:'text',x:e.x,y:e.y,text:'雷霆齐射',life:35});}
-  if(e.kind==='bossShadow'&&room.tick%130===0){e.x=Math.max(0,Math.min(S.W-30,e.x+(Math.random()-.5)*260));e.y=Math.max(0,Math.min(S.H/2,e.y+(Math.random()-.5)*160));spawnEnemy(room);room.effects.push({type:'text',x:e.x,y:e.y,text:'暗影召唤',life:35});}
+  if(e.kind==='bossShadow'&&room.tick%130===0){safeLocalTeleport(room,e,p);spawnEnemy(room);room.effects.push({type:'text',x:e.x,y:e.y,text:'暗影召唤',life:35});}
   if(e.kind==='bossDoom'&&room.tick%300===0){hurtLocalPlayer(room,p,1);room.effects.push({type:'text',x:e.x,y:e.y,text:'末日冲击',life:35});}
 }
 
