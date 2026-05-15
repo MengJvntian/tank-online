@@ -55,3 +55,30 @@ body.in-game, body.in-game *:not(input):not(textarea){user-select:none;-webkit-u
   body.in-game .action-pad{margin-left:auto;gap:10px;align-items:center}
 }
 @media (max-width:380px){body.in-game .dpad{grid-template-columns:54px 54px 54px;grid-template-rows:48px 48px 48px}body.in-game .ctl{width:54px;height:48px}body.in-game .fire{width:82px;height:82px}body.in-game .skill{width:70px;height:70px}body.in-game .canvas-wrap{height:calc(100dvh - 190px)}body.in-game .game canvas{width:min(98vw,calc(100dvh - 194px));height:min(98vw,calc(100dvh - 194px))}}
+
+
+/* v2.9 手机战斗界面适配：信息栏 + 地图 + 操作区完整铺满屏幕 */
+:root{--game-vh:100dvh;--hud-h:88px;--ctrl-h:142px;}
+@media (max-width:900px){
+  body.in-game{height:var(--game-vh);overflow:hidden;background:#020617;}
+  body.in-game .top{display:none!important;}
+  body.in-game .app{height:var(--game-vh);min-height:var(--game-vh);width:100vw;padding:4px;overflow:hidden;border:0;border-radius:0;background:#020617;}
+  body.in-game #game{height:calc(var(--game-vh) - 8px);overflow:hidden;}
+  body.in-game #game .game{height:100%;display:grid;grid-template-rows:var(--hud-h) 1fr var(--ctrl-h);gap:4px;padding:0;}
+  body.in-game .side{order:0;height:var(--hud-h);max-height:var(--hud-h);min-height:0;overflow:hidden;margin:0;padding:5px 70px 5px 6px;border-radius:10px;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:3px;font-size:11px;pointer-events:none;}
+  body.in-game .side .stat{min-width:0;padding:2px 4px;border:0;border-radius:6px;background:rgba(15,23,42,.66);display:flex;gap:4px;align-items:center;justify-content:space-between;}
+  body.in-game .side .stat span{font-size:10px;color:#94a3b8;white-space:nowrap;}
+  body.in-game .side .stat b{font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  body.in-game .side .row{position:fixed;right:6px;top:6px;z-index:80;pointer-events:auto;margin:0;}
+  body.in-game .side .row .red{padding:8px 10px;font-size:13px;border-radius:12px;box-shadow:none;margin:0;}
+  body.in-game .canvas-wrap{order:1;width:100%;height:100%;display:flex;align-items:center;justify-content:center;overflow:hidden;}
+  body.in-game .game canvas{width:min(98vw,calc(var(--game-vh) - var(--hud-h) - var(--ctrl-h) - 20px));height:min(98vw,calc(var(--game-vh) - var(--hud-h) - var(--ctrl-h) - 20px));border-width:2px;border-radius:9px;}
+  body.in-game .mobile-controls{order:2;height:var(--ctrl-h);display:flex;position:relative;left:auto;right:auto;bottom:auto;z-index:50;margin:0;padding:6px 8px;border-radius:16px;background:rgba(2,6,23,.82);backdrop-filter:blur(6px);gap:8px;pointer-events:auto;touch-action:none;align-items:center;}
+  body.in-game .dpad{grid-template-columns:54px 54px 54px;grid-template-rows:42px 42px 42px;gap:5px;}
+  body.in-game .ctl{width:54px;height:42px;border-radius:13px;font-size:18px;margin:0;padding:0;touch-action:none;}
+  body.in-game .fire{width:86px;height:86px;font-size:18px;border-radius:18px;}
+  body.in-game .skill{width:72px;height:72px;font-size:15px;border-radius:18px;}
+  body.in-game .action-pad{margin-left:auto;gap:8px;align-items:center;}
+  body.in-game .side h2,body.in-game .side h3,body.in-game #team{display:none!important;}
+}
+@media (max-width:380px){:root{--hud-h:86px;--ctrl-h:132px;}body.in-game .dpad{grid-template-columns:50px 50px 50px;grid-template-rows:39px 39px 39px}body.in-game .ctl{width:50px;height:39px}body.in-game .fire{width:78px;height:78px}.skill{width:66px;height:66px}}
