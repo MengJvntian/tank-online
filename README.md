@@ -3,7 +3,7 @@
 > 一个支持单机、多人联机、手机/电脑双端适配的网页坦克大战小游戏。  
 > 朋友打开链接即可联机，无需下载客户端。
 
-![version](https://img.shields.io/badge/version-v3.0.0-gold)
+![version](https://img.shields.io/badge/version-v3.0.1-gold)
 ![platform](https://img.shields.io/badge/platform-Web-blue)
 ![mode](https://img.shields.io/badge/mode-Single%20%2F%20Online-green)
 ![engine](https://img.shields.io/badge/engine-HTML5%20Canvas-orange)
@@ -38,16 +38,15 @@
 
 # ✨ 当前版本
 
-# v3.0.0 「钢墙规则与地图扩展」
+# v3.0.1 「Boss 节奏修正」
 
 当前版本重点更新：
 
-- 钢墙改为不可破坏、不可通行，并阻挡所有子弹
-- 水域改为不可通行，但子弹可以穿透
-- 新增多张非常规地图，包括中央基地防守、环形水城、螺旋迷宫等
-- Boss 关穿插进普通关卡节奏中
-- 普通敌人外观区分强化，更容易判断敌人类型
-- 页面视觉与玩法说明继续精修
+- 修正 9-12 关连续 Boss 的节奏问题
+- 保留四个专属 Boss：冰霜、雷霆、暗影、末日
+- Boss 关重新穿插到普通关卡流程中
+- 关卡顺序调整为：普通关推进，中间穿插单个 Boss 关，最后挑战末日 Boss
+- 单机与联机的 Boss 生成逻辑改为读取关卡 `bossType`，避免 Boss 类型错乱
 
 ---
 
@@ -146,11 +145,11 @@ Boss 拥有：
 - 沙漠地图
 - 冰霜地图
 - 工厂地图
-- Boss 地图
 - 中央基地防守图
 - 环形水城
 - 螺旋迷宫
 - 镜像战场
+- 穿插式 Boss 地图
 
 地图元素：
 
@@ -173,7 +172,7 @@ Boss 拥有：
 - 🔥 双发
 - 🛡 护盾
 - 💣 清屏
-- 🔴 激光
+- 🔴 穿透
 - 👻 穿墙
 - 🧲 磁铁
 - 🚁 无人机
@@ -265,7 +264,7 @@ tank-online/
 
 # 📜 更新日志
 
-# v3.0.0 「钢墙规则与地图扩展」
+# v3.0.1 「Boss 节奏修正」
 
 ### 新增
 
