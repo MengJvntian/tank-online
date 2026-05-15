@@ -82,3 +82,89 @@ body.in-game, body.in-game *:not(input):not(textarea){user-select:none;-webkit-u
   body.in-game .side h2,body.in-game .side h3,body.in-game #team{display:none!important;}
 }
 @media (max-width:380px){:root{--hud-h:86px;--ctrl-h:132px;}body.in-game .dpad{grid-template-columns:50px 50px 50px;grid-template-rows:39px 39px 39px}body.in-game .ctl{width:50px;height:39px}body.in-game .fire{width:78px;height:78px}.skill{width:66px;height:66px}}
+
+
+/* v2.9.1 手机操作区与道具可视性优化 */
+html,body,.app,button,canvas{
+  -webkit-user-select:none;
+  user-select:none;
+  -webkit-touch-callout:none;
+}
+@media (max-width:900px){
+  :root{--hud-h:88px;--ctrl-h:190px;}
+  body.in-game #game .game{
+    grid-template-rows:var(--hud-h) 1fr var(--ctrl-h);
+  }
+  body.in-game .canvas-wrap{
+    height:100%;
+  }
+  body.in-game .game canvas{
+    width:min(98vw,calc(var(--game-vh) - var(--hud-h) - var(--ctrl-h) - 18px));
+    height:min(98vw,calc(var(--game-vh) - var(--hud-h) - var(--ctrl-h) - 18px));
+  }
+  body.in-game .mobile-controls{
+    min-height:var(--ctrl-h);
+    height:var(--ctrl-h);
+    padding:14px 12px 18px;
+    align-items:center;
+    justify-content:space-between;
+    border-radius:20px 20px 0 0;
+  }
+  body.in-game .dpad{
+    grid-template-columns:70px 70px 70px;
+    grid-template-rows:54px 54px 54px;
+    gap:9px;
+    align-self:center;
+  }
+  body.in-game .ctl{
+    width:70px;
+    height:54px;
+    border-radius:17px;
+    font-size:22px;
+  }
+  body.in-game .action-pad{
+    gap:14px;
+    align-items:center;
+    align-self:center;
+  }
+  body.in-game .skill{
+    width:96px;
+    height:116px;
+    border-radius:26px;
+    font-size:18px;
+  }
+  body.in-game .fire{
+    width:122px;
+    height:122px;
+    border-radius:28px;
+    font-size:24px;
+  }
+  body.in-game .side{
+    z-index:90;
+  }
+  body.in-game .side .row{
+    z-index:120;
+  }
+}
+@media (max-width:380px){
+  :root{--hud-h:86px;--ctrl-h:178px;}
+  body.in-game .dpad{
+    grid-template-columns:62px 62px 62px;
+    grid-template-rows:50px 50px 50px;
+    gap:8px;
+  }
+  body.in-game .ctl{
+    width:62px;
+    height:50px;
+  }
+  body.in-game .skill{
+    width:82px;
+    height:104px;
+    font-size:16px;
+  }
+  body.in-game .fire{
+    width:106px;
+    height:106px;
+    font-size:22px;
+  }
+}

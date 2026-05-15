@@ -3,7 +3,7 @@
 > 一个支持单机、多人联机、手机/电脑双端适配的网页坦克大战小游戏。  
 > 朋友打开链接即可联机，无需下载客户端。
 
-![version](https://img.shields.io/badge/version-v2.8.0-gold)
+![version](https://img.shields.io/badge/version-v2.9.1-gold)
 ![platform](https://img.shields.io/badge/platform-Web-blue)
 ![mode](https://img.shields.io/badge/mode-Single%20%2F%20Online-green)
 ![engine](https://img.shields.io/badge/engine-HTML5%20Canvas-orange)
@@ -38,15 +38,14 @@
 
 # ✨ 当前版本
 
-# v2.8.0 「钢铁风暴」
+# v2.9.1 「触控强化」
 
 当前版本重点更新：
 
-- Boss 战系统重做
-- 手机端全面适配优化
-- 技能系统商业化重平衡
-- 基地防御机制升级
-- 联机大厅体验优化
+- 手机端操作区纵向加大，触控更稳定
+- 道具图标全面强化，更醒目易识别
+- 防误触与长按复制优化
+- 保留 Boss、技能购买、基地二段加固等平衡性内容
 
 ---
 
@@ -130,6 +129,8 @@ Boss 拥有：
 - 手机技能按钮
 - 响应式布局
 - 防误触优化
+- 竖屏操作区强化
+- 道具图标高亮显示
 
 ---
 
@@ -258,7 +259,7 @@ tank-online/
 
 # 📜 更新日志
 
-# v2.8.0 「钢铁风暴」
+# v2.9.1 「触控强化」
 
 ### 新增
 
